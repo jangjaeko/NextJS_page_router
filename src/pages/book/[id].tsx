@@ -8,6 +8,7 @@ import {
   InferGetStaticPropsType,
 } from "next";
 import fetchOneBook from "@/lib/fetch-oneBook";
+import { useRouter } from "next/router";
 
 export const getStaticPaths = () => {
   return {
@@ -16,13 +17,21 @@ export const getStaticPaths = () => {
       { params: { id: "2" } },
       { params: { id: "3" } },
     ],
-    fallback: false,
+    // fallback: "blocking", // can also use ssr for non-predefined paths & after that cache it for next time it works like ssg
+    // fallback: false, // other paths will 404
+    fallback: true, // show loading state first, then ssr, skip getStaticProps logics and then just give props to the page
   };
 };
 
 export const getStaticProps = async (context: GetServerSidePropsContext) => {
   const id = context.params!.id;
   const book = await fetchOneBook(Number(id));
+
+  if (!book) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
@@ -34,8 +43,9 @@ export const getStaticProps = async (context: GetServerSidePropsContext) => {
 export default function Page(
   props: InferGetStaticPropsType<typeof getStaticProps>
 ) {
+  const router = useRouter();
   const { book } = props;
-
+  if (router.isFallback) return <>Loading...</>;
   if (!book) return <>No book found</>;
 
   const { title, subTitle, description, author, publisher, coverImgUrl } = book;
