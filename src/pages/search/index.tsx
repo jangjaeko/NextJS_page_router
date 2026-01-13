@@ -16,11 +16,10 @@ export const getServerSideProps = async (
   };
 };
 
-export default function Page({
-  books,
-}: {
-  books: InferGetServerSidePropsType<typeof getServerSideProps>;
-}) {
+export default function Page(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
+  const { books } = props;
   const router = useRouter();
   console.log("router:", router);
   // const { name } = router.query;

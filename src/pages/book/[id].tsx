@@ -2,12 +2,25 @@
 // ad [...id] matches /book/a, /book/a/b, /book/a/b/c, etc.
 // add [[]] to make it optional => matches /book as well
 import style from "./[id].module.css";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import {
+  GetServerSidePropsContext,
+  // InferGetServerSidePropsType,
+  InferGetStaticPropsType,
+} from "next";
 import fetchOneBook from "@/lib/fetch-oneBook";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export const getStaticPaths = () => {
+  return {
+    paths: [
+      { params: { id: "1" } },
+      { params: { id: "2" } },
+      { params: { id: "3" } },
+    ],
+    fallback: false,
+  };
+};
+
+export const getStaticProps = async (context: GetServerSidePropsContext) => {
   const id = context.params!.id;
   const book = await fetchOneBook(Number(id));
 
@@ -18,15 +31,14 @@ export const getServerSideProps = async (
   };
 };
 
-export default function Page({
-  book,
-}: {
-  book: InferGetServerSidePropsType<typeof getServerSideProps>;
-}) {
-  if (!book) {
-    return <div className={style.container}>Book not found</div>;
-  }
-  const { title, subTitle, author, publisher, description, coverImgUrl } = book;
+export default function Page(
+  props: InferGetStaticPropsType<typeof getStaticProps>
+) {
+  const { book } = props;
+
+  if (!book) return <>No book found</>;
+
+  const { title, subTitle, description, author, publisher, coverImgUrl } = book;
 
   return (
     <div className={style.container}>

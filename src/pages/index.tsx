@@ -2,11 +2,12 @@ import SearchableLayout from "@/components/searchable-layout";
 import style from "./index.module.css";
 
 import BookItem from "@/components/book-item";
-import { InferGetServerSidePropsType } from "next";
+import { InferGetStaticPropsType } from "next";
 import fetchBooks from "@/lib/fetch-books";
 import fetchRandomBooks from "@/lib/fetch-random-books";
+import BookData from "@/types";
 
-export const getServerSideProps = async () => {
+export const getStaticProps = async () => {
   const [allBooks, recommendBooks] = await Promise.all([
     fetchBooks(),
     fetchRandomBooks(),
@@ -23,19 +24,19 @@ export const getServerSideProps = async () => {
 export default function Home({
   allBooks,
   recommendBooks,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   console.log("allBooks:", allBooks);
   return (
     <div>
       <section className={style.container}>
         <h3>Now recommending</h3>
-        {recommendBooks.map((book) => (
+        {recommendBooks.map((book: BookData) => (
           <BookItem key={book.id} {...book} />
         ))}
       </section>
       <section className={style.container}>
         <h3>registered books</h3>
-        {allBooks.map((book) => (
+        {allBooks.map((book: BookData) => (
           <BookItem key={book.id} {...book} />
         ))}
       </section>
