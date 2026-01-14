@@ -9,6 +9,7 @@ import {
 } from "next";
 import fetchOneBook from "@/lib/fetch-oneBook";
 import { useRouter } from "next/router";
+import Head from "next/head";
 
 export const getStaticPaths = () => {
   return {
@@ -45,25 +46,44 @@ export default function Page(
 ) {
   const router = useRouter();
   const { book } = props;
-  if (router.isFallback) return <>Loading...</>;
+  if (router.isFallback)
+    return (
+      <>
+        <Head>
+          <title>books</title>
+          <meta property="og:image" content="/og-image-home.png" />
+          <meta property="og:title" content="books" />
+          <meta property="og:description" content="A collection of books" />
+        </Head>
+        <div>Loading...</div>
+      </>
+    );
   if (!book) return <>No book found</>;
 
   const { title, subTitle, description, author, publisher, coverImgUrl } = book;
 
   return (
-    <div className={style.container}>
-      <div
-        style={{ backgroundImage: `url(${coverImgUrl})` }}
-        className={style.cover_img_container}
-      >
-        <img src={coverImgUrl} alt={title} width={300} />
+    <>
+      <Head>
+        <title>{title}</title>
+        <meta property="og:image" content={coverImgUrl} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+      </Head>
+      <div className={style.container}>
+        <div
+          style={{ backgroundImage: `url(${coverImgUrl})` }}
+          className={style.cover_img_container}
+        >
+          <img src={coverImgUrl} alt={title} width={300} />
+        </div>
+        <div className={style.title}>{title}</div>
+        <div className={style.subTitle}>{subTitle}</div>
+        <div className={style.author}>
+          {author} | {publisher}
+        </div>
+        <div className={style.description}>{description}</div>
       </div>
-      <div className={style.title}>{title}</div>
-      <div className={style.subTitle}>{subTitle}</div>
-      <div className={style.author}>
-        {author} | {publisher}
-      </div>
-      <div className={style.description}>{description}</div>
-    </div>
+    </>
   );
 }

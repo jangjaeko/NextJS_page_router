@@ -4,7 +4,7 @@ import SearchableLayout from "@/components/searchable-layout";
 import BookItem from "@/components/book-item";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import fetchBooks from "@/lib/fetch-books";
-
+import Head from "next/head";
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
@@ -26,6 +26,12 @@ export default function Page(
 
   return (
     <div>
+      <Head>
+        <title>Books search result</title>
+        <meta property="og:image" content="/og-image-home.png" />
+        <meta property="og:title" content="Books Page" />
+        <meta property="og:description" content="A collection of books" />
+      </Head>
       {books.map((book) => (
         <BookItem key={book.id} {...book} />
       ))}
