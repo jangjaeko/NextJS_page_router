@@ -18,6 +18,7 @@ export const getStaticProps = async () => {
       allBooks,
       recommendBooks,
     },
+    revalidate: 10, // in seconds
   };
 }; // make this page ssr & only work on server side
 
